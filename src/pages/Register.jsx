@@ -1,9 +1,17 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import bg from "../assets/bg2.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { axiosinstance } from "../config/axios";
+import toast from "react-hot-toast";
+import { useSign } from "../context/SignContext";
 
 const Register = () => {
+
+    const navigate = useNavigate()
+
+    const { isAuth } = useSign()
+
     const {
         register,
         handleSubmit,
@@ -11,21 +19,38 @@ const Register = () => {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = (data) => {
-        console.log("Register Data:", data);
+    const password = watch("password", "");
+
+    const onSubmit = async(data) => {
+        try {
+            const response = await axiosinstance.post('register/', data)
+            if(response?.data.status_code === 6000){
+                const token = response.data.access
+                isAuth(token)
+                toast.success(response.data.message)
+                navigate('/')
+            }else if (response?.data.status_code === 6001){
+                const errorData = response.data.error;
+                const errorMessage = typeof errorData === "string" ? errorData : Object.values(errorData).flat().join(", ");
+                toast.error(errorMessage);
+            }else{
+                toast.error('Register Failed')
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error('An unexpected error occurred')
+        }
     };
 
-    // Watch password for confirm validation
-    const password = watch("password");
 
     return (
         <div
-            className="h-screen w-screen bg-cover bg-center flex items-center justify-start px-6 md:px-0"
+            className="h-[120vh] md:h-screen w-screen bg-cover bg-center flex items-center justify-start px-6 md:px-0"
             style={{
                 backgroundImage: `url(${bg})`,
             }}
         >
-            <div className="md:ml-12 lg:ml-24 w-[380px] md:w-[600px] p-8 rounded-2xl backdrop-blur-lg bg-white/20 shadow-xl border border-white/30">
+            <div className="md:ml-12 lg:ml-24 w-[380px] md:w-[600px] p-8 rounded-2xl backdrop-blur-lg bg-[#ffffffc3] shadow-xl border border-white/30">
                 <h2 className="text-3xl font-bold text-[#00526b] text-center mb-6">
                     Register
                 </h2>
@@ -42,7 +67,7 @@ const Register = () => {
                                 type="email"
                                 placeholder="Enter your email"
                                 {...register("email", { required: "Email is required" })}
-                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-white/30 focus:border-[#31dbf8]"
+                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-[#156776]/20 focus:border-[#31dbf8]"
                             />
                             {errors.email && (
                                 <p className="text-red-400 text-xs mt-1">
@@ -62,7 +87,7 @@ const Register = () => {
                                         message: "Enter a valid 10-digit phone number",
                                     },
                                 })}
-                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-white/30 focus:border-[#31dbf8]"
+                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-[#156776]/20 focus:border-[#31dbf8]"
                             />
                             {errors.phone_number && (
                                 <p className="text-red-400 text-xs mt-1">
@@ -80,7 +105,7 @@ const Register = () => {
                                 type="text"
                                 placeholder="Enter your first name"
                                 {...register("first_name", { required: "First name is required" })}
-                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-white/30 focus:border-[#31dbf8]"
+                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-[#156776]/20 focus:border-[#31dbf8]"
                             />
                             {errors.first_name && (
                                 <p className="text-red-400 text-xs mt-1">
@@ -94,7 +119,7 @@ const Register = () => {
                                 type="text"
                                 placeholder="Enter your last name"
                                 {...register("last_name", { required: "Last name is required" })}
-                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-white/30 focus:border-[#31dbf8]"
+                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-[#156776]/20 focus:border-[#31dbf8]"
                             />
                             {errors.last_name && (
                                 <p className="text-red-400 text-xs mt-1">
@@ -112,7 +137,7 @@ const Register = () => {
                                 type="password"
                                 placeholder="Enter your password"
                                 {...register("password", { required: "Password is required" })}
-                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-white/30 focus:border-[#31dbf8]"
+                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-[#156776]/20 focus:border-[#31dbf8]"
                             />
                             {errors.password && (
                                 <p className="text-red-400 text-xs mt-1">
@@ -130,7 +155,7 @@ const Register = () => {
                                     validate: (value) =>
                                         value === password || "Passwords do not match",
                                 })}
-                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-white/30 focus:border-[#31dbf8]"
+                                className="w-full mt-1 px-4 py-2 rounded-lg bg-white/20 placeholder-[#6e919f] outline-none border border-[#156776]/20 focus:border-[#31dbf8]"
                             />
                             {errors.confirm_password && (
                                 <p className="text-red-400 text-xs mt-1">
