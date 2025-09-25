@@ -1,8 +1,10 @@
-import {createBrowserRouter} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import UserLayout from "../layouts/UserLayout";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import { AuthUser } from "./protectedRouts/AuthUser";
+import { SingleDepartment } from "../pages/SingleDepartment";
 
 
 
@@ -13,10 +15,21 @@ export const router = createBrowserRouter([
     element: <UserLayout />,
 
     children: [
-        {
-            path: "/",
-            element : <Home />
-        }
+      {
+        path: "/",
+        element: <Home />
+      },
+      {
+        path: "user",
+        element: <AuthUser />,
+
+        children: [
+          {
+            path: "department/:id",
+            element: <SingleDepartment />
+          }
+        ]
+      },
     ]
   },
   {
@@ -24,7 +37,7 @@ export const router = createBrowserRouter([
     element: <Login />
   },
   {
-    path : 'register',
-    element : <Register />
+    path: 'register',
+    element: <Register />
   }
 ]);
