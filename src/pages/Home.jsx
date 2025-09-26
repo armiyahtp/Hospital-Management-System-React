@@ -14,38 +14,14 @@ import img4 from '../assets/hs4.png'
 import { Plus, User, Cross, Clock, Stethoscope, Home as HomeIcon, Play, Pill, Building, Shield, ArrowRight, Star, Quote, Phone } from 'lucide-react';
 import { axiosinstance } from '../config/axios';
 import { Link } from 'react-router-dom';
-import { useSign } from '../context/SignContext';
 
 const Home = () => {
     const [active, setActive] = useState(0)
     const [department, setDepartment] = useState([])
-    const { dropdownRef, profileRef, pagesDropdown, profileDropdown, setPagesDropdown, setProfileDropdown } = useSign()
+    const [doctors, setDoctor] = useState([])
+    const [testimonials, setTest] = useState([])
 
 
-
-
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (pagesDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setPagesDropdown(false)
-            }
-            if (profileDropdown && profileRef.current && !profileRef.current.contains(event.target)) {
-                setProfileDropdown(false)
-            }
-        }
-
-        if (pagesDropdown) {
-            document.addEventListener('mousedown', handleClickOutside)
-        }
-        if (profileDropdown) {
-            document.addEventListener('mousedown', handleClickOutside)
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [pagesDropdown, profileDropdown])
 
 
 
@@ -61,6 +37,43 @@ const Home = () => {
         }
         fetchDepartment()
     }, [])
+
+
+
+
+
+
+    useEffect(() => {
+        const fetchDoctor = async () => {
+            try {
+                const response = await axiosinstance.get('doctors/')
+                setDoctor(response.data.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchDoctor()
+    }, [])
+
+
+
+
+
+
+
+    useEffect(() => {
+        const fetchTestimoniol = async () => {
+            try {
+                const response = await axiosinstance.get('testimonials/')
+                setTest(response.data.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchTestimoniol()
+    }, [])
+
+
     return (
         <>
             <div>
@@ -143,6 +156,13 @@ const Home = () => {
                     </Swiper>
                 </section>
 
+
+
+
+
+
+
+
                 {/* Service Highlights Section */}
                 <section className="py-16 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -191,6 +211,13 @@ const Home = () => {
                         </div>
                     </div>
                 </section>
+
+
+
+
+
+
+
 
                 {/* About Us Section */}
                 <section className="py-16 bg-white">
@@ -287,6 +314,13 @@ const Home = () => {
                     </div>
                 </section>
 
+
+
+
+
+
+
+
                 {/* Services Section */}
                 <section className="py-16 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -302,7 +336,7 @@ const Home = () => {
                         <div className="grid md:grid-cols-3 gap-8">
                             {
                                 department.slice(0, 5).map((dep, index) => (
-                                    <Link key={index} to={`/departments/${dep?.id}`} className="block h-full">
+                                    <Link key={index} to={`/departments/${dep?.id || index}`} className="block h-full">
                                         <motion.div
                                             initial={{ opacity: 0, y: 20 }}
                                             whileInView={{ opacity: 1, y: 0 }}
@@ -341,6 +375,11 @@ const Home = () => {
                     </div>
                 </section>
 
+
+
+
+
+
                 {/* Doctors Section */}
                 <section className="py-16 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -352,27 +391,30 @@ const Home = () => {
                         </div>
 
                         <div className="grid md:grid-cols-4 gap-8">
-                            {[
-                                { name: "Dr. John Smith", specialty: "Cardiologist" },
-                                { name: "Dr. Sarah Johnson", specialty: "Neurologist" },
-                                { name: "Dr. Michael Brown", specialty: "Pediatrician" },
-                                { name: "Dr. Emily Davis", specialty: "Dermatologist" }
-                            ].map((doctor, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="text-center"
-                                >
-                                    <div className="w-32 h-32 bg-gray-300 rounded-2xl mx-auto mb-4"></div>
-                                    <h3 className="text-lg font-bold text-gray-800 mb-2">{doctor.name}</h3>
-                                    <p className="text-gray-600">{doctor.specialty}</p>
-                                </motion.div>
-                            ))}
+                            {
+                                doctors.map((doctor, index) => (
+                                    <Link key={doctor.id || index} to={`/user/doctors/${doctor.id}`} className="block">
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                                            className="text-center hover:scale-105 transition-transform duration-300 cursor-pointer"
+                                        >
+                                            <div className="w-32 h-32 bg-gray-300 rounded-2xl mx-auto mb-4 overflow-hidden">
+                                                <img src={doctor.profile_image} alt="" className="w-full h-full object-cover" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-gray-800 mb-2">{doctor.first_name} {doctor.last_name}</h3>
+                                            <p className="text-gray-600">{doctor.department.name}</p>
+                                        </motion.div>
+                                    </Link>
+                                ))}
                         </div>
                     </div>
                 </section>
+
+
+
+
 
                 {/* How It Works Section */}
                 <section className="py-16 bg-gray-50">
@@ -411,7 +453,7 @@ const Home = () => {
                                         className="bg-white p-6 rounded-xl shadow-lg"
                                     >
                                         <div className="flex items-start gap-4">
-                                            <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                                            <div className="w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
                                                 {step.number}
                                             </div>
                                             <div>
@@ -426,6 +468,13 @@ const Home = () => {
                     </div>
                 </section>
 
+
+
+
+
+
+
+
                 {/* Testimonials Section */}
                 <section className="py-16 bg-blue-900">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -437,26 +486,8 @@ const Home = () => {
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-8">
-                            {[
-                                {
-                                    name: "Samantha Elizabeth",
-                                    location: "New York, NY",
-                                    quote: "CareLink provided exceptional care during my treatment. The doctors were knowledgeable and compassionate.",
-                                    rating: 5
-                                },
-                                {
-                                    name: "Robert Chen",
-                                    location: "Los Angeles, CA",
-                                    quote: "The emergency services at CareLink saved my life. Quick response and professional care.",
-                                    rating: 5
-                                },
-                                {
-                                    name: "Maria Rodriguez",
-                                    location: "Chicago, IL",
-                                    quote: "Outstanding healthcare experience. The staff made me feel comfortable and well-cared for.",
-                                    rating: 5
-                                }
-                            ].map((testimonial, index) => (
+                            {
+                            testimonials.map((testimonial, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
@@ -465,9 +496,9 @@ const Home = () => {
                                     className="bg-blue-800 p-8 rounded-2xl"
                                 >
                                     <div className="w-16 h-16 bg-gray-400 rounded-xl mb-6"></div>
-                                    <h3 className="text-white font-bold mb-1">{testimonial.name}</h3>
-                                    <p className="text-blue-200 text-sm mb-4">{testimonial.location}</p>
-                                    <p className="text-blue-100 mb-6 italic">"{testimonial.quote}"</p>
+                                    <h3 className="text-white font-bold mb-1">{testimonial.patient.first_name} {testimonial.patient.last_name}</h3>
+                                    <p className="text-blue-200 text-sm mb-4">{testimonial.patient.place}</p>
+                                    <p className="text-blue-100 mb-6 italic">"{testimonial.description}"</p>
                                     <div className="flex gap-1">
                                         {[...Array(testimonial.rating)].map((_, i) => (
                                             <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />

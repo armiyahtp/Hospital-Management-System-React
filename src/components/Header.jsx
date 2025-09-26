@@ -5,8 +5,12 @@ import hlogo from '../assets/hlogo.png'
 import { useSign } from '../context/SignContext'
 
 const Header = () => {
-    const { isAuthenticated, logout, dropdownRef, profileRef, pagesDropdown, profileDropdown, setPagesDropdown, setProfileDropdown } = useSign()
+    const { isAuthenticated, logout} = useSign()
     const [open, setOpen] = useState(false)
+    const [pagesDropdown, setPagesDropdown] = useState(false)
+    const [profileDropdown, setProfileDropdown] = useState(false)
+    const dropdownRef = useRef(null)
+    const profileRef = useRef(null)
     const [togleone, setTogleone] = useState("togle-box")
     const [togletwo, setTogletwo] = useState("")
 

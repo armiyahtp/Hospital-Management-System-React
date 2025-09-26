@@ -8,13 +8,7 @@ const SignContext = createContext()
 
 export const SignProvider = ({ children }) => {
     const [isAuthenticated, setAuthenticated] = useState(false)
-    const [pagesDropdown, setPagesDropdown] = useState(false)
-    const [profileDropdown, setProfileDropdown] = useState(false)
-    const dropdownRef = useRef(null)
-    const profileRef = useRef(null)
-
-
-
+    
 
 
 
@@ -40,7 +34,7 @@ export const SignProvider = ({ children }) => {
     }
 
     return (
-        <SignContext.Provider value={{ isAuth, isAuthenticated, logout, dropdownRef, profileRef, pagesDropdown, profileDropdown, setPagesDropdown, setProfileDropdown}}>
+        <SignContext.Provider value={{ isAuth, isAuthenticated, logout}}>
             {children}
         </SignContext.Provider>
     )
