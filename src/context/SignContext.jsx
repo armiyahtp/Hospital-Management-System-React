@@ -14,6 +14,7 @@ export const SignProvider = ({ children }) => {
 
     const isAuth = (token) => {
         localStorage.setItem('Token', token)
+        setAuthenticated(true)
     }
 
 

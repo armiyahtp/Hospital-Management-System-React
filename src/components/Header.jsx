@@ -102,7 +102,7 @@ const Header = () => {
 
 
 
-                    <div className="hidden md:flex items-center gap-6">
+                    <div className="hidden md:flex items-center gap-5">
                         {isAuthenticated ? (
                             <>
                                 <motion.div
@@ -112,7 +112,7 @@ const Header = () => {
                                 >
                                     <Link
                                         to={'appointments'}
-                                        className="px-4 py-3 rounded-full border border-white/40 hover:bg-white/10 text-white text-sm transition-all duration-200"
+                                        className="px-4 py-3 rounded-full border mr-0 md:mr-10 border-white/40 hover:bg-white/10 text-white text-sm transition-all duration-200"
                                     >
                                         Book Appointment
                                     </Link>
