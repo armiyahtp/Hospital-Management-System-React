@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { axiosinstance } from '../config/axios'
-import { Calendar as CalendarIcon, Mail, Phone, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { Calendar as CalendarIcon, Mail, Phone, ChevronLeft, ChevronRight, Clock, User, Stethoscope } from 'lucide-react'
 
 export const SingleDoctor = () => {
     const { id } = useParams()
@@ -186,11 +187,50 @@ export const SingleDoctor = () => {
 
     return (
         <div className="bg-gray-50">
-            <div className='w-full bg-[#031e2dd0] h-12 sm:h-14 lg:h-16 mb-4 sm:mb-6'></div>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-10">
-                <div className="grid lg:grid-cols-3 gap-5 sm:gap-8">
+            <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white py-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center"
+                    >
+                        <div className="flex items-center justify-center mb-6">
+                            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <Stethoscope className="w-8 h-8 text-white" />
+                            </div>
+                        </div>
+
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">Doctor Profile</h1>
+                        <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+                            View doctor details, availability, and book your appointment
+                        </p>
+                    </motion.div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-10 py-5">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="grid lg:grid-cols-3 gap-5 sm:gap-8"
+                >
                     {/* Doctor Profile Card */}
-                    <div className="lg:col-span-1">
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="lg:col-span-1"
+                    >
                         <div className="bg-white rounded-2xl shadow p-4 sm:p-6">
                             <div className="flex items-center gap-3 sm:gap-4">
                                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gray-200 overflow-hidden">
@@ -217,7 +257,9 @@ export const SingleDoctor = () => {
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
+
+
 
 
 
@@ -226,7 +268,12 @@ export const SingleDoctor = () => {
 
 
                     {/* Availability & Tokens */}
-                    <div className="lg:col-span-2">
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: 0.6 }}
+                        className="lg:col-span-2"
+                    >
                         <div className="bg-white rounded-2xl shadow p-4 sm:p-6">
                             <div className="flex items-center justify-between mb-3 sm:mb-4">
                                 <div className="flex items-center gap-2">
@@ -241,7 +288,12 @@ export const SingleDoctor = () => {
                             </div>
 
                             {/* Mobile date pills */}
-                            <div className="lg:hidden -mx-2 px-2">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.8 }}
+                                className="lg:hidden -mx-2 px-2"
+                            >
                                 <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
                                     {availableDatesList.map((iso) => {
                                         const [yy, mm, dd] = iso.split('-').map(Number)
@@ -263,7 +315,9 @@ export const SingleDoctor = () => {
                                     })}
                                     <button onClick={() => setMobileCalendarOpen(!mobileCalendarOpen)} className="min-w-[104px] rounded-2xl border px-3 py-2 text-center shadow-sm bg-white border-blue-300 text-blue-700">Select Date</button>
                                 </div>
-                            </div>
+                            </motion.div>
+
+
 
 
 
@@ -274,7 +328,12 @@ export const SingleDoctor = () => {
 
                             {/* Mobile calendar grid (toggle) */}
                             {mobileCalendarOpen && (
-                                <div className="lg:hidden grid grid-cols-7 gap-2 select-none mt-3">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="lg:hidden grid grid-cols-7 gap-2 select-none mt-3"
+                                >
                                     {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                                         <div key={d} className="text-xs text-gray-500 text-center py-1">{d}</div>
                                     ))}
@@ -293,11 +352,21 @@ export const SingleDoctor = () => {
                                             </button>
                                         )
                                     })}
-                                </div>
+                                </motion.div>
                             )}
 
+
+
+
+
+
                             {/* Desktop calendar grid */}
-                            <div className="hidden lg:grid grid-cols-7 gap-2 select-none">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 1.0 }}
+                                className="hidden lg:grid grid-cols-7 gap-2 select-none"
+                            >
                                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                                     <div key={d} className="text-xs text-gray-500 text-center py-1">{d}</div>
                                 ))}
@@ -317,10 +386,20 @@ export const SingleDoctor = () => {
                                         </button>
                                     )
                                 })}
-                            </div>
+                            </motion.div>
+
+
+
+
+                            
 
                             {/* Tokens */}
-                            <div className="mt-4 sm:mt-6">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 1.2 }}
+                                className="mt-4 sm:mt-6"
+                            >
                                 <div className="flex items-center gap-2 mb-3">
                                     <Clock className="w-5 h-5 text-blue-600" />
                                     <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Available tokens{selectedDate ? ` for ${formatLocalDate(selectedDate)}` : ''}</h3>
@@ -331,7 +410,7 @@ export const SingleDoctor = () => {
                                     <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
                                         {tokens.map((t, i) => (
                                             <button key={i} className="px-3 py-2 sm:px-4 sm:py-2 rounded-xl border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 text-xs sm:text-sm font-medium">
-                                                {t.token_number ? `#${t.token_number} ` : ''}{t.start_time ? `${to12Hour(t.start_time)}` : ''}{t.end_time ? ` - ${to12Hour(t.end_time)}` : ''}
+                                                {t.token_number ? `#${t.token_number}, ` : ''}{t.start_time ? `${to12Hour(t.start_time)}` : ''}
                                             </button>
                                         ))}
                                     </div>
@@ -339,10 +418,10 @@ export const SingleDoctor = () => {
                                     <p className="text-sm text-gray-500">{selectedDate ? 'No tokens available for the selected date.' : 'Select an available date to view tokens.'}</p>
                                 )}
                                 <p className="mt-3 text-center text-xs text-gray-500 lg:hidden">Swipe right to see more →</p>
-                            </div>
+                            </motion.div>
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             </div>
         </div>
     )

@@ -20,6 +20,7 @@ const Home = () => {
     const [department, setDepartment] = useState([])
     const [doctors, setDoctor] = useState([])
     const [testimonials, setTest] = useState([])
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false)
 
 
 
@@ -223,23 +224,54 @@ const Home = () => {
                 <section className="py-16 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-2 gap-12 items-center">
-                            {/* Left Column - Placeholders */}
+                            {/* Left Column - Images and Video */}
                             <div className="space-y-6">
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.6 }}
-                                    className="h-64 bg-gray-200 rounded-2xl"
-                                ></motion.div>
+                                    className="h-64 rounded-2xl overflow-hidden"
+                                >
+                                    <img
+                                        src="/src/assets/bg3.png"
+                                        alt="Healthcare facility"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </motion.div>
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.6, delay: 0.2 }}
-                                    className="h-64 bg-gray-800 rounded-2xl flex items-center justify-center"
+                                    className="h-64 rounded-2xl overflow-hidden relative group cursor-pointer"
+                                    onClick={() => {
+                                        const video = document.getElementById('about-video');
+                                        if (video) {
+                                            if (video.paused) {
+                                                video.play();
+                                                video.controls = true;
+                                            }
+                                        }
+                                    }}
                                 >
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                                        <Play className="w-8 h-8 text-gray-800 ml-1" />
-                                    </div>
+                                    <video
+                                        id="about-video"
+                                        className="w-full h-full object-cover"
+                                        poster="/src/assets/hs4.png"
+                                        preload="metadata"
+                                        onPlay={() => setIsVideoPlaying(true)}
+                                        onPause={() => setIsVideoPlaying(false)}
+                                        onEnded={() => setIsVideoPlaying(false)}
+                                    >
+                                        <source src="/src/assets/abv.mp4" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    {!isVideoPlaying && (
+                                        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center group-hover:bg-opacity-40 transition-all duration-300">
+                                            <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <Play className="w-8 h-8 text-gray-800 ml-1" />
+                                            </div>
+                                        </div>
+                                    )}
                                 </motion.div>
                             </div>
 
@@ -336,7 +368,7 @@ const Home = () => {
                         <div className="grid md:grid-cols-3 gap-8">
                             {
                                 department.slice(0, 5).map((dep, index) => (
-                                    <Link key={index} to={`/departments/${dep?.id || index}`} className="block h-full">
+                                    <Link key={index} to={`/user/department/${dep?.id}`} className="block h-full">
                                         <motion.div
                                             initial={{ opacity: 0, y: 20 }}
                                             whileInView={{ opacity: 1, y: 0 }}
@@ -487,25 +519,25 @@ const Home = () => {
 
                         <div className="grid md:grid-cols-3 gap-8">
                             {
-                            testimonials.map((testimonial, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="bg-blue-800 p-8 rounded-2xl"
-                                >
-                                    <div className="w-16 h-16 bg-gray-400 rounded-xl mb-6"></div>
-                                    <h3 className="text-white font-bold mb-1">{testimonial.patient.first_name} {testimonial.patient.last_name}</h3>
-                                    <p className="text-blue-200 text-sm mb-4">{testimonial.patient.place}</p>
-                                    <p className="text-blue-100 mb-6 italic">"{testimonial.description}"</p>
-                                    <div className="flex gap-1">
-                                        {[...Array(testimonial.rating)].map((_, i) => (
-                                            <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            ))}
+                                testimonials.map((testimonial, index) => (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                                        className="bg-blue-800 p-8 rounded-2xl"
+                                    >
+                                        <div className="w-16 h-16 bg-gray-400 rounded-xl mb-6"></div>
+                                        <h3 className="text-white font-bold mb-1">{testimonial.patient.first_name} {testimonial.patient.last_name}</h3>
+                                        <p className="text-blue-200 text-sm mb-4">{testimonial.patient.place}</p>
+                                        <p className="text-blue-100 mb-6 italic">"{testimonial.description}"</p>
+                                        <div className="flex gap-1">
+                                            {[...Array(testimonial.rating)].map((_, i) => (
+                                                <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                ))}
                         </div>
                     </div>
                 </section>

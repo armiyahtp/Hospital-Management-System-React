@@ -6,10 +6,13 @@
 
 
 .togle-box {
-    padding: 0.5rem 1rem;
+    padding: 0.7rem 1.7rem;
+    border-radius: 100px;
+}
+
+.togle-box.active {
     border-width: 1px;
     border-color: rgb(255 255 255 / 0.4);
-    border-radius: 100px;
 }
 
 .togle-box:hover {

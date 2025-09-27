@@ -29,7 +29,7 @@ export const SignProvider = ({ children }) => {
 
 
     const logout = () => {
-        localStorage.removeItem("BearToken")
+        localStorage.removeItem("Token")
         setAuthenticated(false)
     }
 

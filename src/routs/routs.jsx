@@ -6,6 +6,8 @@ import Register from "../pages/Register";
 import { AuthUser } from "./protectedRouts/AuthUser";
 import { SingleDepartment } from "../pages/SingleDepartment";
 import { SingleDoctor } from "../pages/SingleDoctor";
+import { Doctor } from "../pages/Doctor";
+import { Departments } from "../pages/Departments";
 
 
 
@@ -34,6 +36,14 @@ export const router = createBrowserRouter([
             element: <SingleDoctor />
           }
         ]
+      },
+      {
+        path: "doctors",
+        element: <Doctor />
+      },
+      {
+        path: "departments",
+        element: <Departments />
       },
     ]
   },
