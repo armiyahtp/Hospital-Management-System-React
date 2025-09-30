@@ -96,7 +96,7 @@ const Home = () => {
                                 <div className="absolute inset-0 bg-[#00000089]" />
                                 <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
                                     <motion.div key={active === 0 ? 'slide-0' : 'slide-0-idle'} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-white max-w-xl">
-                                        <p className="text-xs uppercase flex items-center tracking-widest text-white/80"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Care Link</p>
+                                        <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Care Link</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">We are here to hear and heal your health problems</h2>
                                         <div className="mt-4 flex gap-3">
                                             <a className="px-6 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Get Started</a>
@@ -112,7 +112,7 @@ const Home = () => {
                                 <div className="absolute inset-0 bg-[#00000089]" />
                                 <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-end">
                                     <motion.div key={active === 1 ? 'slide-1' : 'slide-1-idle'} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-white max-w-xl ">
-                                        <p className="text-xs uppercase flex items-center tracking-widest text-white/80"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Emergency Ready</p>
+                                        <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Emergency Ready</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">24/7 emergency care and ambulance services</h2>
                                         <div className="mt-4 flex gap-3">
                                             <a className="px-6 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Call Now</a>
@@ -128,7 +128,7 @@ const Home = () => {
                                 <div className="absolute inset-0 bg-[#00000089]" />
                                 <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
                                     <motion.div key={active === 2 ? 'slide-2' : 'slide-2-idle'} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-white max-w-xl">
-                                        <p className="text-xs uppercase flex items-center tracking-widest text-white/80"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Specialists</p>
+                                        <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Specialists</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">Consult our experienced medical specialists</h2>
                                         <div className="mt-4 flex gap-3">
                                             <a className="px-5 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Book Appointment</a>
@@ -144,7 +144,7 @@ const Home = () => {
                                 <div className="absolute inset-0 bg-[#00000089]" />
                                 <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-end">
                                     <motion.div key={active === 3 ? 'slide-3' : 'slide-3-idle'} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-white max-w-xl ">
-                                        <p className="text-xs uppercase flex items-center tracking-widest text-white/80"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Modern Facilities</p>
+                                        <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Modern Facilities</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">Well equipped labs and advanced diagnostics</h2>
                                         <div className="mt-4 flex gap-3">
                                             <a className="px-9 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Explore</a>
@@ -333,14 +333,16 @@ const Home = () => {
                                 </div>
 
                                 {/* Call to Action Button */}
-                                <motion.button
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.6, delay: 0.5 }}
-                                    className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold transition-colors shadow-lg hover:shadow-xl"
-                                >
-                                    Appointment
-                                </motion.button>
+                                <Link to={'departments'}>
+                                    <motion.button
+                                        initial={{ opacity: 0, y: 30 }}
+                                        whileInView={{ opacity: 1, y: 10 }}
+                                        transition={{ duration: 0.6, delay: 0.5 }}
+                                        className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold transition-colors shadow-lg hover:shadow-xl"
+                                    >
+                                        Appointment
+                                    </motion.button>
+                                </Link>
                             </motion.div>
                         </div>
                     </div>

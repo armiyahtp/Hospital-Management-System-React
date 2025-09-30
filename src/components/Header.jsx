@@ -111,7 +111,7 @@ const Header = () => {
                                     transition={{ duration: 0.2 }}
                                 >
                                     <Link
-                                        to={'appointments'}
+                                        to={'departments'}
                                         className="px-4 py-3 rounded-full border mr-0 md:mr-10 border-white/40 hover:bg-white/10 text-white text-sm transition-all duration-200"
                                     >
                                         Book Appointment

@@ -8,6 +8,9 @@ import { SingleDepartment } from "../pages/SingleDepartment";
 import { SingleDoctor } from "../pages/SingleDoctor";
 import { Doctor } from "../pages/Doctor";
 import { Departments } from "../pages/Departments";
+import { About } from "../pages/About";
+import { Testmonial } from "../pages/Testmonial";
+import { Contact } from "../pages/Contact";
 
 
 
@@ -44,6 +47,18 @@ export const router = createBrowserRouter([
       {
         path: "departments",
         element: <Departments />
+      },
+      {
+        path: "about",
+        element: <About />
+      },
+      {
+        path: "testimonials",
+        element: <Testmonial />
+      },
+      {
+        path: "contacts",
+        element: <Contact />
       },
     ]
   },

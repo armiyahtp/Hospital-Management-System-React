@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { axiosinstance } from '../config/axios'
-import { Calendar as CalendarIcon, Mail, Phone, ChevronLeft, ChevronRight, Clock, User, Stethoscope } from 'lucide-react'
+import { Calendar as CalendarIcon, Mail, Phone, ChevronLeft, ChevronRight, Clock, User, Stethoscope, Award, DollarSign, FileText, Briefcase, CreditCard, CheckCircle } from 'lucide-react'
+import PaymentModal from '../components/PaymentModal'
 
 export const SingleDoctor = () => {
     const { id } = useParams()
@@ -18,9 +19,14 @@ export const SingleDoctor = () => {
         return d
     })
     const [mobileCalendarOpen, setMobileCalendarOpen] = useState(false)
+    const [selectedToken, setSelectedToken] = useState(null)
+    const [showPaymentModal, setShowPaymentModal] = useState(false)
+    const [paymentSuccess, setPaymentSuccess] = useState(false)
 
     const num = Number(id)
     const token = localStorage.getItem('Token')
+
+
 
 
 
@@ -88,15 +94,13 @@ export const SingleDoctor = () => {
 
 
 
-
-
-
-
-
     // Normalize available dates from API (support multiple shapes)
     const availableDates = useMemo(() => {
-        if (!doctor) return new Set()
+        if (!doctor) {
+            return new Set()
+        }
         const set = new Set()
+
         // Common shapes: doctor.available_dates (array of ISO), doctor.availability[].date, doctor.slots keys
         if (Array.isArray(doctor.available_dates)) {
             doctor.available_dates.forEach((d) => set.add(String(d).slice(0, 10)))
@@ -107,6 +111,7 @@ export const SingleDoctor = () => {
         if (doctor.slots && typeof doctor.slots === 'object') {
             Object.keys(doctor.slots).forEach((k) => set.add(String(k).slice(0, 10)))
         }
+
         return set
     }, [doctor])
 
@@ -150,18 +155,43 @@ export const SingleDoctor = () => {
         const formatted = formatLocalDate(d)
         try {
             setTokensLoading(true)
+            setTokens([]) // Clear previous tokens
+            console.log('Fetching tokens for date:', formatted)
+
             const res = await axiosinstance.get(`doctor/${num}/?appointment_date=${formatted}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            setTokens(res.data.data.tokens);
-            console.log(res)
+            // Handle different response structures
+            const tokensData = res.data?.data?.tokens || []
+            setTokens(tokensData);
         } catch (error) {
-            console.log(error)
+            console.log('Error fetching tokens:', error)
+            setTokens([])
         } finally {
             setTokensLoading(false)
         }
     };
+
+    const handleTokenSelect = (token) => {
+        setSelectedToken(token)
+        setShowPaymentModal(true)
+    }
+
+    const handlePaymentSuccess = (appointmentId) => {
+        setPaymentSuccess(true)
+        setShowPaymentModal(false)
+        setSelectedToken(null)
+        setSelectedDate(null)
+        setTokens([])
+        // You can add a success message or redirect here
+        console.log('Appointment booked successfully:', appointmentId)
+    }
+
+    const handlePaymentClose = () => {
+        setShowPaymentModal(false)
+        setSelectedToken(null)
+    }
 
 
 
@@ -231,8 +261,9 @@ export const SingleDoctor = () => {
                         transition={{ duration: 0.6, delay: 0.4 }}
                         className="lg:col-span-1"
                     >
-                        <div className="bg-white rounded-2xl shadow p-4 sm:p-6">
-                            <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+                            {/* Doctor Header */}
+                            <div className="flex items-center gap-3 sm:gap-4 mb-6">
                                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gray-200 overflow-hidden">
                                     {doctor?.doctor.profile_image ? (
                                         <img src={doctor.doctor.profile_image} alt="Doctor" className="w-full h-full object-cover" />
@@ -242,18 +273,93 @@ export const SingleDoctor = () => {
                                 </div>
                                 <div className="min-w-0">
                                     <h1 className="text-xl sm:text-2xl font-bold text-gray-800 truncate">{doctor?.doctor.first_name} {doctor?.doctor.last_name}</h1>
-                                    <p className="text-blue-600 font-medium text-sm sm:text-base truncate">{doctor?.doctor.department?.name || 'Department'}</p>
                                 </div>
                             </div>
-                            <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 text-sm">
+
+                            {/* Contact Information */}
+                            <div className="space-y-3 text-sm mb-6">
                                 {doctor?.doctor.email && (
-                                    <div className="flex items-center gap-2 text-gray-700"><Mail className="w-4 h-4 text-blue-600" /> {doctor.doctor.email}</div>
+                                    <div className="flex items-center gap-2 text-gray-700">
+                                        <Mail className="w-4 h-4 text-blue-600" />
+                                        <span className="truncate">{doctor.doctor.email}</span>
+                                    </div>
                                 )}
                                 {doctor?.doctor.phone_number && (
-                                    <div className="flex items-center gap-2 text-gray-700"><Phone className="w-4 h-4 text-blue-600" /> {doctor.doctor.phone_number}</div>
+                                    <div className="flex items-center gap-2 text-gray-700">
+                                        <Phone className="w-4 h-4 text-blue-600" />
+                                        <span>{doctor.doctor.phone_number}</span>
+                                    </div>
                                 )}
                                 {Array.isArray(doctor?.available_dates) && doctor.available_dates.length > 0 && (
-                                    <div className="flex items-center gap-2 text-gray-700"><CalendarIcon className="w-4 h-4 text-blue-600" /> Available on {doctor.available_dates.length} day(s)</div>
+                                    <div className="flex items-center gap-2 text-gray-700">
+                                        <CalendarIcon className="w-4 h-4 text-blue-600" />
+                                        <span>Available on {doctor.available_dates.length} day(s)</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Doctor Details */}
+                            <div className="space-y-4">
+                                {/* Experience */}
+                                {doctor?.doctor.experience && (
+                                    <div className="bg-blue-50 rounded-xl p-4">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <Briefcase className="w-4 h-4 text-blue-600" />
+                                            </div>
+                                            <h3 className="font-semibold text-gray-800">Experience</h3>
+                                        </div>
+                                        <p className="text-gray-700 text-sm ml-11">
+                                            {doctor.doctor.experience} years of experience
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Specialization */}
+                                {doctor?.doctor.specialization && (
+                                    <div className="bg-green-50 rounded-xl p-4">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <Award className="w-4 h-4 text-green-600" />
+                                            </div>
+                                            <h3 className="font-semibold text-gray-800">Specialization</h3>
+                                        </div>
+                                        <p className="text-gray-700 text-sm ml-11">
+                                            {doctor.doctor.specialization}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Consultation Fee */}
+                                {doctor?.doctor.fee && (
+                                    <div className="bg-purple-50 rounded-xl p-4">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                <DollarSign className="w-4 h-4 text-purple-600" />
+                                            </div>
+                                            <h3 className="font-semibold text-gray-800">Consultation Fee</h3>
+                                        </div>
+                                        <p className="text-gray-700 text-sm ml-11">
+                                            ₹{doctor.doctor.fee}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Description */}
+                                {doctor?.doctor.description && (
+                                    <div className="bg-gray-50 rounded-xl p-4">
+                                        <div className="flex items-start gap-3 mb-2">
+                                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <FileText className="w-4 h-4 text-gray-600" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="font-semibold text-gray-800 mb-2">About Doctor</h3>
+                                                <p className="text-gray-700 text-sm leading-relaxed">
+                                                    {doctor.doctor.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -391,7 +497,7 @@ export const SingleDoctor = () => {
 
 
 
-                            
+
 
                             {/* Tokens */}
                             <motion.div
@@ -404,14 +510,58 @@ export const SingleDoctor = () => {
                                     <Clock className="w-5 h-5 text-blue-600" />
                                     <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Available tokens{selectedDate ? ` for ${formatLocalDate(selectedDate)}` : ''}</h3>
                                 </div>
+
                                 {tokensLoading ? (
                                     <div className="h-10 bg-gray-100 rounded animate-pulse" />
                                 ) : tokens.length > 0 ? (
-                                    <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                         {tokens.map((t, i) => (
-                                            <button key={i} className="px-3 py-2 sm:px-4 sm:py-2 rounded-xl border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 text-xs sm:text-sm font-medium">
-                                                {t.token_number ? `#${t.token_number}, ` : ''}{t.start_time ? `${to12Hour(t.start_time)}` : ''}
-                                            </button>
+                                            <motion.div
+                                                key={i}
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ duration: 0.3, delay: i * 0.1 }}
+                                                className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-200"
+                                            >
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                            <Clock className="w-4 h-4 text-blue-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-semibold text-gray-800">
+                                                                {t.token_number ? `Token #${t.token_number}` : 'Available Slot'}
+                                                            </p>
+                                                            <p className="text-sm text-gray-600">
+                                                                {t.start_time ? `${to12Hour(t.start_time)}` : 'Time TBD'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="text-sm text-gray-600">
+                                                        <p>Registration: ₹{Number(doctor?.doctor?.department?.hospital?.registration_fee || 0)}</p>
+                                                        <p>Consultation: ₹{Number(doctor?.doctor?.fee || 0)}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-lg font-bold text-blue-600">
+                                                            ₹{Number(doctor?.doctor?.department?.hospital?.registration_fee || 0) + Number(doctor?.doctor?.fee || 0)}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">Total</p>
+                                                    </div>
+                                                </div>
+
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    onClick={() => handleTokenSelect(t)}
+                                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center gap-2"
+                                                >
+                                                    <CreditCard className="w-4 h-4" />
+                                                    Book Now
+                                                </motion.button>
+                                            </motion.div>
                                         ))}
                                     </div>
                                 ) : (
@@ -423,6 +573,31 @@ export const SingleDoctor = () => {
                     </motion.div>
                 </motion.div>
             </div>
+
+            {/* Payment Modal */}
+            <PaymentModal
+                isOpen={showPaymentModal}
+                onClose={handlePaymentClose}
+                token={selectedToken}
+                doctor={doctor}
+                onPaymentSuccess={handlePaymentSuccess}
+            />
+
+            {/* Payment Success Message */}
+            {paymentSuccess && (
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 50 }}
+                    className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-xl shadow-lg flex items-center gap-3 z-50"
+                >
+                    <CheckCircle className="w-6 h-6" />
+                    <div>
+                        <p className="font-semibold">Appointment Booked!</p>
+                        <p className="text-sm text-green-100">Payment successful and appointment confirmed.</p>
+                    </div>
+                </motion.div>
+            )}
         </div>
     )
 }
