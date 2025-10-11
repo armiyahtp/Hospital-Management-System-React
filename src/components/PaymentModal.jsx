@@ -14,6 +14,7 @@ import {
     Stethoscope
 } from "lucide-react";
 import { axiosinstance } from "../config/axios";
+import toast from "react-hot-toast";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -29,6 +30,7 @@ const PaymentModalContent = ({ isOpen, onClose, token, doctor, onPaymentSuccess 
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [clientSecret, setClientSecret] = useState("");
     const [paymentId, setPaymentId] = useState("");
+    const [intentId, setIntentId] = useState()
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
 
@@ -53,6 +55,11 @@ const PaymentModalContent = ({ isOpen, onClose, token, doctor, onPaymentSuccess 
         }
     }, [isOpen, token]);
 
+
+
+
+
+
     const createPaymentIntent = async () => {
         try {
             setLoading(true);
@@ -61,6 +68,7 @@ const PaymentModalContent = ({ isOpen, onClose, token, doctor, onPaymentSuccess 
             if (response.data.clientSecret) {
                 setClientSecret(response.data.clientSecret);
                 setPaymentId(response.data.payment_id);
+                setIntentId(response.data.intent_id)
             } else {
                 setError("Failed to create payment intent. No client secret received.");
             }
@@ -71,8 +79,10 @@ const PaymentModalContent = ({ isOpen, onClose, token, doctor, onPaymentSuccess 
         }
     };
 
+    
 
 
+    
 
 
 
@@ -147,6 +157,25 @@ const PaymentModalContent = ({ isOpen, onClose, token, doctor, onPaymentSuccess 
 
 
 
+
+
+
+    const pid = Number(paymentId)
+    const deletPaymentIntent = async () => {
+        try {
+            const response = await axiosinstance.delete(`appointment/cancel/${pid}/`, {
+                intent_id: intentId,
+                headers: { Authorization: `Bearer ${localStorage.getItem('Token')}` }
+            })
+            onClose()
+        } catch (error) {
+            console.log(error)
+            toast.error('Failed to delete payment intent')
+        }
+    }
+
+
+
     if (!isOpen) return null;
 
     return (
@@ -175,7 +204,7 @@ const PaymentModalContent = ({ isOpen, onClose, token, doctor, onPaymentSuccess 
                                     <p className="text-blue-100">Secure payment (Test Mode)</p>
                                 </div>
                             </div>
-                            <button onClick={onClose} className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg">
+                            <button onClick={deletPaymentIntent} className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg">
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
@@ -280,7 +309,7 @@ const PaymentModalContent = ({ isOpen, onClose, token, doctor, onPaymentSuccess 
 
                                         <button
                                             type="submit"
-                                            disabled={paymentLoading}
+                                            disabled={paymentLoading || error}
                                             className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                                         >
                                             {paymentLoading ? (

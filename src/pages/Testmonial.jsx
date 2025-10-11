@@ -16,7 +16,8 @@ import {
     ThumbsUp,
     Clock,
     Eye,
-    Settings
+    Settings,
+    User
 } from 'lucide-react'
 import { axiosinstance } from '../config/axios'
 import TestimonialManager from '../components/TestimonialManager'
@@ -25,20 +26,30 @@ export const Testmonial = () => {
     const [testimonials, setTestimonials] = useState([])
     const [activeTab, setActiveTab] = useState('view')
 
+    // Helper function to safely get rating
+    const getSafeRating = (rating) => {
+        const numRating = parseInt(rating)
+        if (isNaN(numRating) || numRating < 1) return 5
+        if (numRating > 5) return 5
+        return numRating
+    }
 
-    
-    
+
+
+
     const fetchTestimonials = async () => {
         try {
             const response = await axiosinstance.get('testimonials/')
-            setTestimonials(response.data.data)
+            console.log('Testimonials response:', response.data)
+            setTestimonials(response.data.data || [])
         } catch (error) {
-            console.log(error)
+            console.log('Error fetching testimonials:', error)
+            setTestimonials([]) // Set empty array on error
         }
     }
-    
-    
-    // 'view' or 'manage'
+
+
+
 
     useEffect(() => {
         fetchTestimonials()
@@ -128,6 +139,14 @@ export const Testmonial = () => {
                 </div>
             </section>
 
+
+
+
+
+
+
+
+
             {/* Conditional Content */}
             {activeTab === 'manage' ? (
                 <TestimonialManager />
@@ -151,7 +170,7 @@ export const Testmonial = () => {
                             </motion.div>
 
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {testimonials.map((testimonial, index) => (
+                                {testimonials && Array.isArray(testimonials) && testimonials.length > 0 ? testimonials.filter(testimonial => testimonial && typeof testimonial === 'object').map((testimonial, index) => (
                                     <motion.div
                                         key={index}
                                         initial={{ opacity: 0, y: 20 }}
@@ -160,19 +179,35 @@ export const Testmonial = () => {
                                         className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group"
                                     >
                                         <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                                                {testimonial.patient?.first_name?.charAt(0) || 'P'}
+                                            <div className="relative">
+                                                {testimonial?.profile_image ? (
+                                                    <img
+                                                        src={testimonial.profile_image}
+                                                        alt={`${testimonial?.patient?.first_name || 'Patient'} ${testimonial?.patient?.last_name || ''}`}
+                                                        className="w-16 h-16 rounded-full object-cover border-2 border-blue-200 shadow-lg"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none'
+                                                            e.target.nextSibling.style.display = 'flex'
+                                                        }}
+                                                    />
+                                                ) :
+                                                    <div
+                                                        className={`w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl border-2 border-blue-200 shadow-lg ${testimonial?.patient?.profile_image ? 'hidden' : 'flex'}`}
+                                                    >
+                                                        <User className="w-8 h-8" />
+                                                    </div>
+                                                }
                                             </div>
                                             <div>
                                                 <h3 className="font-bold text-gray-800 text-lg">
-                                                    {testimonial.patient?.first_name} {testimonial.patient?.last_name}
+                                                    {testimonial?.patient?.first_name || 'Anonymous'} {testimonial?.patient?.last_name || ''}
                                                 </h3>
-                                                <p className="text-gray-500 text-sm">{testimonial.patient?.place}</p>
+                                                <p className="text-gray-500 text-sm">{testimonial?.patient?.place || 'Location not specified'}</p>
                                             </div>
                                         </div>
 
                                         <div className="flex gap-1 mb-4">
-                                            {[...Array(testimonial.rating || 5)].map((_, i) => (
+                                            {[...Array(getSafeRating(testimonial?.rating))].map((_, i) => (
                                                 <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                                             ))}
                                         </div>
@@ -180,7 +215,7 @@ export const Testmonial = () => {
                                         <div className="relative">
                                             <Quote className="w-8 h-8 text-blue-200 absolute -top-2 -left-2" />
                                             <p className="text-gray-700 italic leading-relaxed pl-6">
-                                                "{testimonial.description}"
+                                                "{testimonial?.description || 'No description available'}"
                                             </p>
                                         </div>
 
@@ -191,7 +226,17 @@ export const Testmonial = () => {
                                             </div>
                                         </div>
                                     </motion.div>
-                                ))}
+                                )) : (
+                                    <div className="col-span-full text-center py-16">
+                                        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                            <Quote className="w-12 h-12 text-gray-400" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-gray-800 mb-4">No Testimonials Yet</h3>
+                                        <p className="text-gray-600 text-lg max-w-md mx-auto">
+                                            We're working on collecting patient testimonials. Check back soon to read about our patients' experiences!
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </section>

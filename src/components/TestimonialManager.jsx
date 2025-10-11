@@ -462,10 +462,24 @@ const TestimonialManager = () => {
                                 >
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isCurrentUserTestimonial ? 'bg-blue-100' : 'bg-gray-100'
-                                                }`}>
-                                                <User className={`w-6 h-6 ${isCurrentUserTestimonial ? 'text-blue-600' : 'text-gray-600'
-                                                    }`} />
+                                            <div className="relative">
+                                                {testimonial?.profile_image ? (
+                                                    <img
+                                                        src={testimonial.profile_image}
+                                                        alt={`${testimonial?.patient?.first_name || 'Patient'} ${testimonial?.patient?.last_name || ''}`}
+                                                        className={`w-12 h-12 rounded-full object-cover border-2 shadow-lg ${isCurrentUserTestimonial ? 'border-blue-200' : 'border-gray-200'}`}
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none'
+                                                            e.target.nextSibling.style.display = 'flex'
+                                                        }}
+                                                    />
+                                                ) :
+                                                    <div
+                                                        className={`w-12 h-12 rounded-full flex items-center justify-center border-2 shadow-lg ${isCurrentUserTestimonial ? 'bg-blue-100 border-blue-200' : 'bg-gray-100 border-gray-200'} ${testimonial?.patient?.profile_image ? 'hidden' : 'flex'}`}
+                                                    >
+                                                        <User className={`w-6 h-6 ${isCurrentUserTestimonial ? 'text-blue-600' : 'text-gray-600'}`} />
+                                                    </div>
+                                                }
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">

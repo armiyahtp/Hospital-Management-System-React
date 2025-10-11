@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import hlogo from '../assets/hlogo.png'
 import { useSign } from '../context/SignContext'
+import toast from 'react-hot-toast'
+import { div, span } from 'framer-motion/client'
+import { axiosinstance } from '../config/axios'
 
 const Header = () => {
     const { isAuthenticated, logout } = useSign()
@@ -14,6 +17,35 @@ const Header = () => {
     const profileRef = useRef(null)
     const [togleone, setTogleone] = useState("togle-box active")
     const [togletwo, setTogletwo] = useState("togle-box")
+    const [profileImage, setProfileImage] = useState(null)
+    const [profileImageLoading, setProfileImageLoading] = useState(false)
+
+
+
+
+
+
+
+
+    // Function to refresh profile image (can be called from other components)
+    const refreshProfileImage = async () => {
+        if (!token) return
+
+        try {
+            setProfileImageLoading(true)
+            const response = await axiosinstance.get('profile/', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+
+            if (response.data.status_code === 6000 && response.data.data.profile_image) {
+                setProfileImage(response.data.data.profile_image)
+            }
+        } catch (error) {
+            console.log('Profile image refresh error:', error)
+        } finally {
+            setProfileImageLoading(false)
+        }
+    }
 
     const togleOne = () => {
         setTogleone("togle-box active")
@@ -25,17 +57,71 @@ const Header = () => {
         setTogleone("togle-box")
     }
 
+
+
+
+
+
+
+
+
+
+
+    const token = localStorage.getItem('Token')
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            refreshProfileImage()
+        }
+    }, [token, isAuthenticated])
+
+    // Listen for profile image updates from other components
+    useEffect(() => {
+        const handleProfileImageUpdate = () => {
+            refreshProfileImage()
+        }
+
+        window.addEventListener('profileImageUpdated', handleProfileImageUpdate)
+        return () => {
+            window.removeEventListener('profileImageUpdated', handleProfileImageUpdate)
+        }
+    }, [])
+
+
+
+
+
+
+
+
+
+
     // Click outside to close dropdowns
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (!dropdownRef.current.contains(event.target)) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setPagesDropdown(false)
             }
-            if (!profileRef.current.contains(event.target)) {
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
                 setProfileDropdown(false)
             }
         }
-    }, [pagesDropdown, profileDropdown])
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
+
+
+
+
+
+
+
+
+
+    
 
     return (
         <header className="absolute inset-x-0 top-16 md:top-10 z-50">
@@ -48,7 +134,7 @@ const Header = () => {
 
                     <nav className="hidden md:flex items-center gap-11 text-sm">
                         <Link to={'/'} className="text-white/90 hover:text-white">Home</Link>
-                        <Link to={'appointments'} className="text-white/90 hover:text-white">Appointments</Link>
+                        <Link to={'/user/appointments'} className="text-white/90 hover:text-white">Appointments</Link>
                         <Link to={'doctors'} className="text-white/90 hover:text-white">Doctors</Link>
                         <Link to={'contacts'} className="text-white/90 hover:text-white">Contact</Link>
 
@@ -75,7 +161,7 @@ const Header = () => {
                                     }`}
                             >
                                 <Link
-                                    to={'testimonials'}
+                                    to={'/testimonials'}
                                     onClick={() => setPagesDropdown(false)}
                                     className="block px-4 py-3 text-gray-700 hover:bg-[#031e2d] hover:text-white transition-colors border-b border-gray-200 last:border-b-0"
                                 >
@@ -131,15 +217,28 @@ const Header = () => {
                                         aria-haspopup="menu"
                                         aria-expanded={profileDropdown}
                                     >
-                                        <span className="flex h-9 w-9 rounded-full bg-slate-900 items-center justify-center text-white">
-                                            <UserIcon className="w-5 h-5" />
-                                        </span>
+                                        {profileImageLoading ? (
+                                            <span className="flex h-9 w-9 rounded-full bg-slate-900 items-center justify-center text-white animate-pulse">
+                                                <UserIcon className="w-5 h-5" />
+                                            </span>
+                                        ) : profileImage ? (
+                                            <img
+                                                src={profileImage}
+                                                alt="Profile"
+                                                className="h-9 w-9 rounded-full object-cover"
+                                                onError={() => setProfileImage(null)}
+                                            />
+                                        ) : (
+                                            <span className="flex h-9 w-9 rounded-full bg-slate-900 items-center justify-center text-white">
+                                                <UserIcon className="w-5 h-5" />
+                                            </span>
+                                        )}
                                     </motion.button>
                                     <div
                                         className={`absolute right-0 mt-3 w-44 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden transition-all duration-300 ${profileDropdown ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
                                             }`}
                                     >
-                                        <Link to={'profile'} onClick={() => setProfileDropdown(false)} className="block px-4 py-3 text-gray-700 hover:bg-[#031e2d] hover:text-white transition-colors border-b border-gray-200">Profile</Link>
+                                        <Link to={'/user/profile'} onClick={() => setProfileDropdown(false)} className="block px-4 py-3 text-gray-700 hover:bg-[#031e2d] hover:text-white transition-colors border-b border-gray-200">Profile</Link>
                                         <button onClick={() => { setProfileDropdown(false); logout(); }} className="w-full text-left px-4 py-3 text-gray-700 hover:bg-[#031e2d] hover:text-white transition-colors">Logout</button>
                                     </div>
                                 </div>
@@ -215,7 +314,7 @@ const Header = () => {
                     <div className="mt-2 rounded-xl bg-slate-900/90 backdrop-blur-md ring-1 ring-white/10 text-sm text-white">
                         <nav className="flex flex-col p-3">
                             <Link to={'home'} onClick={() => setOpen(false)} className="px-3 py-2 rounded hover:bg-white/10">Home</Link>
-                            <Link to={'appointments'} onClick={() => setOpen(false)} className="px-3 py-2 rounded hover:bg-white/10">Appointments</Link>
+                            <Link to={'/user/appointments'} onClick={() => setOpen(false)} className="px-3 py-2 rounded hover:bg-white/10">Appointments</Link>
                             <Link to={'doctors'} onClick={() => setOpen(false)} className="px-3 py-2 rounded hover:bg-white/10">Doctors</Link>
                             <Link to={'contacts'} onClick={() => setOpen(false)} className="px-3 py-2 rounded hover:bg-white/10">Contact</Link>
                             <Link to={'testimonials'} onClick={() => setOpen(false)} className="block px-3 py-2 rounded hover:bg-white/10 text-sm">Testimonials</Link>
@@ -228,13 +327,26 @@ const Header = () => {
                                 <div className="p-3">
                                     <div className="flex items-center gap-3 mb-3">
                                         <span className="p-[2px] rounded-full bg-gradient-to-tr from-red-500 via-yellow-400 to-blue-500">
-                                            <span className="flex h-9 w-9 rounded-full bg-slate-800 items-center justify-center text-white">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M12 2.25a4.5 4.5 0 0 0-4.5 4.5v.75a4.5 4.5 0 1 0 9 0V6.75A4.5 4.5 0 0 0 12 2.25ZM4.5 20.25a7.5 7.5 0 0 1 15 0v.75a.75.75 0 0 1-.75.75h-13.5a.75.75 0 0 1-.75-.75v-.75Z" clipRule="evenodd" /></svg>
-                                            </span>
+                                            {profileImageLoading ? (
+                                                <span className="flex h-9 w-9 rounded-full bg-slate-800 items-center justify-center text-white animate-pulse">
+                                                    <UserIcon className="w-5 h-5" />
+                                                </span>
+                                            ) : profileImage ? (
+                                                <img
+                                                    src={profileImage}
+                                                    alt="Profile"
+                                                    className="h-9 w-9 rounded-full object-cover"
+                                                    onError={() => setProfileImage(null)}
+                                                />
+                                            ) : (
+                                                <span className="flex h-9 w-9 rounded-full bg-slate-800 items-center justify-center text-white">
+                                                    <UserIcon className="w-5 h-5" />
+                                                </span>
+                                            )}
                                         </span>
                                         <span className="text-white/90 text-sm">Account</span>
                                     </div>
-                                    <Link to={'/profile'} onClick={() => setOpen(false)} className="block px-3 py-2 rounded hover:bg-white/10 text-sm">Profile</Link>
+                                    <Link to={'/user/profile'} onClick={() => setOpen(false)} className="block px-3 py-2 rounded hover:bg-white/10 text-sm">Profile</Link>
                                     <button onClick={() => { setOpen(false); logout(); }} className="w-full text-left px-3 py-2 rounded hover:bg-white/10 text-sm">Logout</button>
                                 </div>
                             ) : (

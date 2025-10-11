@@ -529,12 +529,30 @@ const Home = () => {
                                         transition={{ duration: 0.6, delay: index * 0.1 }}
                                         className="bg-blue-800 p-8 rounded-2xl"
                                     >
-                                        <div className="w-16 h-16 bg-gray-400 rounded-xl mb-6"></div>
+                                        <div className="relative mb-6">
+                                            {testimonial?.profile_image ? (
+                                                <img
+                                                    src={testimonial.profile_image}
+                                                    alt={`${testimonial?.patient?.first_name || 'Patient'} ${testimonial?.patient?.last_name || ''}`}
+                                                    className="w-16 h-16 rounded-xl object-cover border-2 border-blue-200 shadow-lg"
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none'
+                                                        e.target.nextSibling.style.display = 'flex'
+                                                    }}
+                                                />
+                                            ) :
+                                                <div
+                                                    className={`w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg border-2 border-blue-200 ${testimonial?.patient?.profile_image ? 'hidden' : 'flex'}`}
+                                                >
+                                                    <User className="w-8 h-8" />
+                                                </div>
+                                            }
+                                        </div>
                                         <h3 className="text-white font-bold mb-1">{testimonial.patient.first_name} {testimonial.patient.last_name}</h3>
                                         <p className="text-blue-200 text-sm mb-4">{testimonial.patient.place}</p>
                                         <p className="text-blue-100 mb-6 italic">"{testimonial.description}"</p>
                                         <div className="flex gap-1">
-                                            {[...Array(testimonial.rating)].map((_, i) => (
+                                            {[...Array(Math.max(0, Math.floor(Number(testimonial.rating) || 0)))].map((_, i) => (
                                                 <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                                             ))}
                                         </div>

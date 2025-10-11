@@ -31,3 +31,26 @@
     display: none;
     /* Chrome, Safari and Opera */
 }
+
+/* Completely hide scrollbar while keeping scroll functionality */
+::-webkit-scrollbar {
+    display: none;
+}
+
+::-webkit-scrollbar-track {
+    display: none;
+}
+
+::-webkit-scrollbar-thumb {
+    display: none;
+}
+
+/* For Firefox - completely hide scrollbar */
+* {
+    scrollbar-width: none;
+}
+
+/* For IE and Edge */
+* {
+    -ms-overflow-style: none;
+}

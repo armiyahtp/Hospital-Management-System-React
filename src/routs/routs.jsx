@@ -11,6 +11,9 @@ import { Departments } from "../pages/Departments";
 import { About } from "../pages/About";
 import { Testmonial } from "../pages/Testmonial";
 import { Contact } from "../pages/Contact";
+import Appointment from "../pages/Appointment";
+import SingleAppointment from "../pages/SingleAppointment";
+import Profile from "../pages/Profile";
 
 
 
@@ -37,6 +40,18 @@ export const router = createBrowserRouter([
           {
             path: "doctors/:id",
             element: <SingleDoctor />
+          },
+          {
+            path: "appointments",
+            element: <Appointment />
+          },
+          {
+            path: "appointment/:id",
+            element: <SingleAppointment />
+          },
+          {
+            path: "profile",
+            element: <Profile />
           }
         ]
       },
