@@ -21,6 +21,7 @@ const Home = () => {
     const [doctors, setDoctor] = useState([])
     const [testimonials, setTest] = useState([])
     const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+    const [contact, setContact] = useState({})
 
 
 
@@ -75,6 +76,25 @@ const Home = () => {
     }, [])
 
 
+
+
+
+
+
+    const fetchContact = async () => {
+        try {
+            const response = await axiosinstance.get('contact/')
+            setContact(response.data.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchContact()
+    }, [])
+
+
     return (
         <>
             <div>
@@ -99,8 +119,8 @@ const Home = () => {
                                         <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Care Link</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">We are here to hear and heal your health problems</h2>
                                         <div className="mt-4 flex gap-3">
-                                            <a className="px-6 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Get Started</a>
-                                            <a className="px-7 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Learn More</a>
+                                            <Link to={'/departments'}><div className="px-6 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Get Started</div></Link>
+                                            <Link to={'/about'}><div className="px-7 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Learn More</div></Link>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -115,8 +135,8 @@ const Home = () => {
                                         <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Emergency Ready</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">24/7 emergency care and ambulance services</h2>
                                         <div className="mt-4 flex gap-3">
-                                            <a className="px-6 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Call Now</a>
-                                            <a className="px-8 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Details</a>
+                                            <a href={`tel:${contact.emergency_phone}`} className="px-6 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Call Now</a>
+                                            <Link to={'/contacts'}><div className="px-8 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Details</div></Link>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -131,8 +151,8 @@ const Home = () => {
                                         <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Specialists</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">Consult our experienced medical specialists</h2>
                                         <div className="mt-4 flex gap-3">
-                                            <a className="px-5 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Book Appointment</a>
-                                            <a className="px-5 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">View Doctors</a>
+                                            <Link to={'/departments'}><div className="px-5 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Book Appointment</div></Link>
+                                            <Link to={'/doctors'}><div className="px-5 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">View Doctors</div></Link>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -147,8 +167,8 @@ const Home = () => {
                                         <p className="text-xs uppercase flex items-center tracking-widest text-orange-400"><Plus className='w-4 mr-1 text-orange-400 font-black' /> Modern Facilities</p>
                                         <h2 className="mt-2 text-3xl sm:text-6xl font-extrabold">Well equipped labs and advanced diagnostics</h2>
                                         <div className="mt-4 flex gap-3">
-                                            <a className="px-9 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Explore</a>
-                                            <a className="px-9 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Contact</a>
+                                            <Link to={'/departments'}><div className="px-9 py-3 rounded-full bg-brand-600 border-brand-600 text-white hover:bg-brand-700 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Explore</div></Link>
+                                            <Link to={'/contacts'}><div className="px-9 py-3 rounded-full border border-white/40 text-white hover:bg-white/10 text-sm drop-shadow-[0_6px_16px_rgba(255,255,255,0.35)]">Contact</div></Link>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -400,10 +420,10 @@ const Home = () => {
                                 </div>
                                 <h3 className="text-xl font-bold mb-4">Emergency Call</h3>
                                 <p className="text-gray-300 mb-6">24/7 emergency medical assistance when you need it most.</p>
-                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors">
+                                <a href={`tel:${contact.emergency_phone}`}><button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors">
                                     Contact Us
                                     <ArrowRight className="w-4 h-4" />
-                                </button>
+                                </button></a>
                             </motion.div>
                         </div>
                     </div>
