@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { axiosinstance } from '../config/axios'
-import { Calendar as CalendarIcon, Mail, Phone, ChevronLeft, ChevronRight, Clock, User, Stethoscope, Award, DollarSign, FileText, Briefcase, CreditCard, CheckCircle } from 'lucide-react'
+import { Calendar as CalendarIcon, Mail, Phone, ChevronLeft, ChevronRight, Clock, User, Stethoscope, Award, DollarSign, FileText, Briefcase, CreditCard, CheckCircle, X } from 'lucide-react'
 import PaymentModal from '../components/PaymentModal'
 
 export const SingleDoctor = () => {
@@ -22,6 +22,7 @@ export const SingleDoctor = () => {
     const [selectedToken, setSelectedToken] = useState(null)
     const [showPaymentModal, setShowPaymentModal] = useState(false)
     const [paymentSuccess, setPaymentSuccess] = useState(false)
+    const [countdown, setCountdown] = useState(5)
 
     const num = Number(id)
     const token = localStorage.getItem('Token')
@@ -156,7 +157,6 @@ export const SingleDoctor = () => {
         try {
             setTokensLoading(true)
             setTokens([]) // Clear previous tokens
-            console.log('Fetching tokens for date:', formatted)
 
             const res = await axiosinstance.get(`doctor/${num}/?appointment_date=${formatted}`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -180,18 +180,44 @@ export const SingleDoctor = () => {
 
     const handlePaymentSuccess = (appointmentId) => {
         setPaymentSuccess(true)
+        setCountdown(5)
         setShowPaymentModal(false)
         setSelectedToken(null)
         setSelectedDate(null)
         setTokens([])
-        // You can add a success message or redirect here
-        console.log('Appointment booked successfully:', appointmentId)
+
+        // Start countdown for auto-close
+        const countdownInterval = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(countdownInterval)
+                    setPaymentSuccess(false)
+                    return 0
+                }
+                return prev - 1
+            })
+        }, 1000)
+
     }
 
     const handlePaymentClose = () => {
         setShowPaymentModal(false)
         setSelectedToken(null)
     }
+
+    const handleSuccessClose = () => {
+        setPaymentSuccess(false)
+        setCountdown(5)
+    }
+
+    // Cleanup countdown interval on unmount
+    useEffect(() => {
+        return () => {
+            // Clear any running intervals
+            const intervals = []
+            return () => intervals.forEach(clearInterval)
+        }
+    }, [])
 
 
 
@@ -589,13 +615,23 @@ export const SingleDoctor = () => {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 50 }}
-                    className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-xl shadow-lg flex items-center gap-3 z-50"
+                    className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-xl shadow-lg flex items-center gap-3 z-50 max-w-sm"
                 >
-                    <CheckCircle className="w-6 h-6" />
-                    <div>
+                    <CheckCircle className="w-6 h-6 flex-shrink-0" />
+                    <div className="flex-1">
                         <p className="font-semibold">Appointment Booked!</p>
                         <p className="text-sm text-green-100">Payment successful and appointment confirmed.</p>
+                        <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xs text-green-200">Auto-close in</span>
+                            <span className="text-sm font-bold text-white">{countdown}s</span>
+                        </div>
                     </div>
+                    <button
+                        onClick={handleSuccessClose}
+                        className="text-green-200 hover:text-white transition-colors p-1"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
                 </motion.div>
             )}
         </div>

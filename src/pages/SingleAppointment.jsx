@@ -1197,12 +1197,6 @@ const SingleAppointment = () => {
                                 <span className="text-gray-600">Amount Paid</span>
                                 <span className="font-medium text-green-600">₹{bill.payment?.paid_amount || bill.total_amount}</span>
                             </div>
-                            {bill.payment?.transaction_id && (
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Transaction ID</span>
-                                    <span className="font-medium text-xs">{bill.payment.transaction_id}</span>
-                                </div>
-                            )}
                         </div>
 
                         <div className="space-y-3">
