@@ -95,6 +95,8 @@ export const SingleDoctor = () => {
 
 
 
+
+
     // Normalize available dates from API (support multiple shapes)
     const availableDates = useMemo(() => {
         if (!doctor) {
@@ -106,11 +108,8 @@ export const SingleDoctor = () => {
         if (Array.isArray(doctor.available_dates)) {
             doctor.available_dates.forEach((d) => set.add(String(d).slice(0, 10)))
         }
-        if (Array.isArray(doctor.availability)) {
-            doctor.availability.forEach((a) => a?.date && set.add(String(a.date).slice(0, 10)))
-        }
-        if (doctor.slots && typeof doctor.slots === 'object') {
-            Object.keys(doctor.slots).forEach((k) => set.add(String(k).slice(0, 10)))
+        if (Array.isArray(doctor.availabilities)) {
+            doctor.availabilities.forEach((a) => a?.date && set.add(String(a.date).slice(0, 10)))
         }
 
         return set
