@@ -11,6 +11,8 @@ import img1 from '../assets/hs1.jpg'
 import img2 from '../assets/hs2.jpg'
 import img3 from '../assets/hs3.png'
 import img4 from '../assets/hs4.png'
+import img5 from '../assets/bg3.png'
+import vid from '../assets/abv.mp4'
 import { Plus, User, Cross, Clock, Stethoscope, Home as HomeIcon, Play, Pill, Building, Shield, ArrowRight, Star, Quote, Phone } from 'lucide-react';
 import { axiosinstance } from '../config/axios';
 import { Link } from 'react-router-dom';
@@ -253,7 +255,7 @@ const Home = () => {
                                     className="h-64 rounded-2xl overflow-hidden"
                                 >
                                     <img
-                                        src="/src/assets/bg3.png"
+                                        src={img5}
                                         alt="Healthcare facility"
                                         className="w-full h-full object-cover"
                                     />
@@ -276,13 +278,13 @@ const Home = () => {
                                     <video
                                         id="about-video"
                                         className="w-full h-full object-cover"
-                                        poster="/src/assets/hs4.png"
+                                        poster={img4}
                                         preload="metadata"
                                         onPlay={() => setIsVideoPlaying(true)}
                                         onPause={() => setIsVideoPlaying(false)}
                                         onEnded={() => setIsVideoPlaying(false)}
                                     >
-                                        <source src="/src/assets/abv.mp4" type="video/mp4" />
+                                        <source src={vid} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
                                     {!isVideoPlaying && (
